@@ -6,6 +6,7 @@ import os
 import json
 import random
 from datetime import datetime, timedelta
+import multiprocessing
 
 # Get the user's home directory
 
@@ -123,8 +124,7 @@ def runApp():
         write_to_file(datetime.now(),"last_fetch_timestamp")
 
 
-if __name__ == '__main__':
-
+def helperRun():
     match len(sys.argv):        
         case 1:
             runApp()
@@ -144,7 +144,22 @@ if __name__ == '__main__':
                 handle_error(1, "read flag, flag does not exist")
         case _:
             handle_error(1, "read flag, flag does not exist")
-            
+
+if __name__ == '__main__':
+    # Your main code here
+
+    # Wrap your runApp() call in a function to run as a background process
+    def background_task():
+        helperRun()
+        print("ruuning in bg")
+
+    background_process = multiprocessing.Process(target=background_task)
+    background_process.daemon = True  # This makes the process run in the background.
+    background_process.start()
+
+    # The main application can continue running or simply wait in this loop.
+    while True:
+        pass
 
 
 
