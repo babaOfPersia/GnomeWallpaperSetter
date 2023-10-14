@@ -76,7 +76,11 @@ def read_last_fetch_timestamp():
         with open(save_path, "r") as save:
             save_data = json.load(save)
             last_fetch_timestamp = save_data.get("last_fetch_timestamp", "")
-            return datetime.strptime(last_fetch_timestamp,"%Y-%m-%d %H:%M:%S.%f")
+            if last_fetch_timestamp != "":
+               last_fetch_timestamp = datetime.strptime(last_fetch_timestamp,"%Y-%m-%d %H:%M:%S.%f")
+            else:
+               last_fetch_timestamp = datetime(1970, 1, 1)
+            return last_fetch_timestamp
     return None
 
 # Function to write the last fetch timestamp to the save file
@@ -116,7 +120,7 @@ def runApp():
     last_fetch_timestamp = read_last_fetch_timestamp()
     
     # If there's no last fetch timestamp or a week has passed, fetch a new wallpaper
-    if len(last_fetch_timestamp) == 0:
+    if last_fetch_timestamp == datetime(1970, 1, 1):
         download_random_wallpaper()
         write_to_file(datetime.now(),"last_fetch_timestamp")
     elif ((datetime.now() - last_fetch_timestamp) >= timedelta(days=7)):
