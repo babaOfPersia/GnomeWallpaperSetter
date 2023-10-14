@@ -11,7 +11,13 @@ The script is intended to be run in the background and automatically change the 
 
  - This app uses the Unsplash API for now. However, there is a plan to allow users to download wallpapers from any other API soon.
 
-## Make sure to create a wallpapers folder in the Pictures directory before running the application 
+## Make sure to create a Wallpapers directory in the Pictures directory before running the application 
+
+You can do such with
+
+```console
+foo@yourPC:~/$ mkdir Pictures/Wallpapers
+```
 
 ## Installation
 
