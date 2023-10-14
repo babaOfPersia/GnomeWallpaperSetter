@@ -76,7 +76,7 @@ def read_last_fetch_timestamp():
         with open(save_path, "r") as save:
             save_data = json.load(save)
             last_fetch_timestamp = save_data.get("last_fetch_timestamp", "")
-            return last_fetch_timestamp
+            return datetime.strptime(last_fetch_timestamp,"%Y-%m-%d %H:%M:%S.%f")
     return None
 
 # Function to write the last fetch timestamp to the save file
