@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import sys
 import requests
 import os
 import json
@@ -10,7 +11,7 @@ from datetime import datetime, timedelta
 
 home_dir = os.path.expanduser('~')
 if(home_dir == '/root'):
-    home_dir = '/home/kamyar'
+    home_dir = H_DIR
 
 # Directory to store downloaded wallpapers
 WALLPAPER_DIR = home_dir+'/Pictures/Wallpapers'
@@ -21,6 +22,8 @@ def readSave():
     # Set your Unsplash API key
     global UNSPLASH_API_KEY
     global COLLECTION_CODE
+    global H_DIR
+    H_DIR = saveJson['Hdir']
     UNSPLASH_API_KEY = saveJson['APIKEY']
     COLLECTION_CODE = saveJson['Collection']
 
@@ -61,9 +64,9 @@ def download_random_wallpaper():
                 f.write(response.content)
             set_wallpaper(image_path)
         else:
-            print(f"Failed to download the image from Unsplash. Status code: {response.status_code}")
+            handle_error(response.status_code,"download the image from Unsplash")
     else:
-        print(f"Failed to fetch a random image from Unsplash. Status code: {response.status_code}")
+        handle_error(response.status_code,"fetch the image from Unsplash")
 
 # Function to read the save file and return the last fetch timestamp
 def read_last_fetch_timestamp():
@@ -76,27 +79,75 @@ def read_last_fetch_timestamp():
     return None
 
 # Function to write the last fetch timestamp to the save file
-def write_last_fetch_timestamp(timestamp):
+def write_to_file(input,mode):
     save_path = "details.sv"
     save_data = {}
     if os.path.exists(save_path):
         with open(save_path, "r") as save:
             save_data = json.load(save)
-    save_data["last_fetch_timestamp"] = timestamp
+    save_data[mode] = input
     with open(save_path, "w") as save:
         json.dump(save_data, save, default = str)
 
+def argumentAnalyser(arg,input):
+    readSave()
+    match arg:
+        case "-f":
+            download_random_wallpaper()
+            write_to_file(datetime.now(),"last_fetch_timestamp")
+        case "-c":
+            download_random_wallpaper()
+            write_to_file(input,"Collection")
+        case "-config":
+            os.system("nano details.sv")
+        case "-a":
+            download_random_wallpaper()
+            write_to_file(input,"APIKEY")
+        case "-h":
+            download_random_wallpaper()
+            write_to_file(input,"Hdir")
 
-if __name__ == '__main__':
+def handle_error(errorType,message):
+    print(f"Failed to {message}. Status code: {errorType}")
+
+def runApp():
     readSave()
     last_fetch_timestamp = read_last_fetch_timestamp()
     
     # If there's no last fetch timestamp or a week has passed, fetch a new wallpaper
-    if last_fetch_timestamp is "":
+    if len(last_fetch_timestamp) == 0:
         download_random_wallpaper()
-        write_last_fetch_timestamp(datetime.now())
+        write_to_file(datetime.now(),"last_fetch_timestamp")
     elif ((datetime.now() - last_fetch_timestamp) >= timedelta(days=7)):
         download_random_wallpaper()
-        write_last_fetch_timestamp(datetime.now())
+        write_to_file(datetime.now(),"last_fetch_timestamp")
+
+
+if __name__ == '__main__':
+
+    match len(sys.argv):        
+        case 1:
+            runApp()
+        case 2:
+            if sys.argv[1] in ["-f","-config"]:
+                argumentAnalyser(sys.argv[1], "")
+            elif (sys.argv[1] not in ["-c","-a","-h"]):
+                handle_error(1, "read flag, flag does not exist")
+            else:
+                handle_error(2, "read flag, flag is used in the wrong place")
+        case 3:
+            if (sys.argv[1] not in ["-c","-a","-h"]):
+                handle_error(2, "read flag, flag does not exist or is used in the wrong way")
+            elif(sys.argv[1] in ["-c","-a","-h"]):
+                argumentAnalyser(sys.argv[1],sys.argv[2])
+            else:
+                handle_error(1, "read flag, flag does not exist")
+        case _:
+            handle_error(1, "read flag, flag does not exist")
+            
+
+
+
+    
         
     
