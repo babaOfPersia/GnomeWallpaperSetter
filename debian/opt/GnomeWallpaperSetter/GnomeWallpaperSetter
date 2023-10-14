@@ -18,7 +18,7 @@ if(home_dir == '/root'):
 WALLPAPER_DIR = home_dir+'/Pictures/Wallpapers'
 
 def readSave():
-    save = open("details.sv", "r")
+    save = open("/opt/GnomeWallpaperSetter/details.sv", "r")
     saveJson = json.loads(save.readline())
     # Set your Unsplash API key
     global UNSPLASH_API_KEY
@@ -71,7 +71,7 @@ def download_random_wallpaper():
 
 # Function to read the save file and return the last fetch timestamp
 def read_last_fetch_timestamp():
-    save_path = "details.sv"
+    save_path = "/opt/GnomeWallpaperSetter/details.sv"
     if os.path.exists(save_path):
         with open(save_path, "r") as save:
             save_data = json.load(save)
@@ -81,7 +81,7 @@ def read_last_fetch_timestamp():
 
 # Function to write the last fetch timestamp to the save file
 def write_to_file(input,mode):
-    save_path = "details.sv"
+    save_path = "/opt/GnomeWallpaperSetter/details.sv"
     save_data = {}
     if os.path.exists(save_path):
         with open(save_path, "r") as save:
@@ -100,7 +100,7 @@ def argumentAnalyser(arg,input):
             download_random_wallpaper()
             write_to_file(input,"Collection")
         case "-config":
-            os.system("nano details.sv")
+            os.system("nano /opt/GnomeWallpaperSetter/details.sv")
         case "-a":
             download_random_wallpaper()
             write_to_file(input,"APIKEY")

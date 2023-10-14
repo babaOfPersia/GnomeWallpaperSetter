@@ -1,0 +1,18 @@
+#!/bin/sh
+
+set -e
+
+# Create the details.sv file with default or placeholder values
+echo '{"APIKEY": "", "Collection": "", "Hdir": "", "last_fetch_timestamp": ""}' > /opt/GnomeWallpaperSetter/details.sv
+
+chmod +x /usr/bin/GnomeWallpaperSetter
+chmod -R 755 /opt/GnomeWallpaperSetter/
+chown -R $USER:$USER /opt/GnomeWallpaperSetter/
+chown $USER:$USER /opt/GnomeWallpaperSetter/details.sv
+chmod 644 /opt/GnomeWallpaperSetter/details.sv
+chmod  /opt/GnomeWallpaperSetter/details.sv
+
+
+
+
+exit 0
