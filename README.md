@@ -1,7 +1,7 @@
 
 # Gnome Wallpaper Setter
 
-### An effortless wallpaper downloader setter application
+### An effortless wallpaper downloader and setter application
 
 
 The Linux Wallpaper Changer is a Python script designed to download and set wallpapers for Linux devices. It uses the Unsplash API (for now) to fetch high-quality images from the user specified image collection.
