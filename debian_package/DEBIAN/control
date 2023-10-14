@@ -1,7 +1,0 @@
-Package: GnomeWallpaperSetter
-Version: 0.1
-Architecture: all
-Maintainer: Your Name <contact@kbabazadeh.com>
-Description: Gnome Wallpaper Changer
- A tool to change wallpapers on your Gnome desktop.
-Depends: python3, python3-requests
