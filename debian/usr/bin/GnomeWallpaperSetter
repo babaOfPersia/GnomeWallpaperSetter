@@ -7,6 +7,7 @@ import json
 import random
 from datetime import datetime, timedelta
 import multiprocessing
+import random, string
 
 # Get the user's home directory
 
@@ -35,7 +36,50 @@ def set_wallpaper(image_path):
     os.system(f"/usr/bin/gsettings set org.gnome.desktop.background picture-uri-dark 'file://{image_path}'")
     os.system(f"/usr/bin/gsettings set org.gnome.desktop.background picture-uri 'file://{image_path}'")
 
+def generate_wallpaper():
 
+    OPENAI_API_KEY = ""
+
+    # Generate random colors
+    color1 = "#%02x%02x%02x" % (random.randrange(256), random.randrange(256), random.randrange(256))
+    color2 = "#%02x%02x%02x" % (random.randrange(256), random.randrange(256), random.randrange(256))
+
+    url = 'https://api.openai.com/v1/images/generations'
+    headers = {
+        "Content-Type": "application/json",
+        'Authorization': f'Bearer {OPENAI_API_KEY}'
+    }
+
+    data={
+        'prompt': f'Make a 4K desktop wallpaper that is inspired by watercolors blending {color1} and {color2}.',
+        'n':1,
+        'size':"1024x1024"
+    }
+
+    response = requests.post(url, headers=headers, json=data)
+
+    if response.status_code == 200:
+
+        # Parse the JSON response
+        response_data = response.json()
+
+        print(response_data)
+        image_url = response_data['data'][0]['url']
+        image_id = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(12))
+        image_extension = "png"
+
+        # Download the image
+        image_path = os.path.join(WALLPAPER_DIR, f'{image_id}.{image_extension}')
+        response = requests.get(image_url)
+
+        if response.status_code == 200:
+            with open(image_path, 'wb') as f:
+                f.write(response.content)
+            set_wallpaper(image_path)
+        else:
+            handle_error(response.status_code,"download the image from Dall-E")
+    else:
+        handle_error(response.status_code,"fetch the image from Dall-E")
 
 # Function to download a random wallpaper from Unsplash
 def download_random_wallpaper():
@@ -98,6 +142,7 @@ def argumentAnalyser(arg,input):
     readSave()
     match arg:
         case "-f":
+            # generate_wallpaper()
             download_random_wallpaper()
             write_to_file(datetime.now(),"last_fetch_timestamp")
         case "-c":
@@ -155,7 +200,6 @@ if __name__ == '__main__':
     # Wrap your runApp() call in a function to run as a background process
     def background_task():
         helperRun()
-        print("ruuning in bg")
 
     background_process = multiprocessing.Process(target=background_task)
     background_process.daemon = True  # This makes the process run in the background.
